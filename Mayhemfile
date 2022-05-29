@@ -1,0 +1,6 @@
+project: rnshah9/glslang
+target: glslangValidator
+
+cmds:
+  - cmd: /repo/bazel-bin/glslangValidator @@
+    filepath: /test.vert
