@@ -3,3 +3,4 @@ target: glslangValidator
 
 cmds:
   - cmd: /glslangValidator @@
+    filepath: /test.vert
