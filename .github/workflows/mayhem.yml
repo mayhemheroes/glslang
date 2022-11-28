@@ -51,7 +51,8 @@ jobs:
       fail-fast: false
       matrix:
         mayhemfile:
-          - mayhem/Mayhemfile
+          - mayhem/Mayhemfile_isBuiltInSymbol
+          - mayhem/Mayhemfile_glslangValidator
 
     steps:
       - uses: actions/checkout@v2

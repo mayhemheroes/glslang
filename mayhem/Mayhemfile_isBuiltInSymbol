@@ -1,0 +1,5 @@
+project: glslang
+target: isbuiltinsymbol
+
+cmds:
+  - cmd: /fuzz_isBuiltInSymbol

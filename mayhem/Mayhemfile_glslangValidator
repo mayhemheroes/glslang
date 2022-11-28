@@ -4,4 +4,3 @@ target: glslangvalidator
 cmds:
   - cmd: /glslangValidator @@
     filepath: /test.vert
-image: ghcr.io/rnshah9/playground:glslang
