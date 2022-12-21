@@ -1,0 +1,6 @@
+project: glslang
+target: glslangvalidator
+
+cmds:
+  - cmd: /glslangValidator @@
+    filepath: /test.vert
