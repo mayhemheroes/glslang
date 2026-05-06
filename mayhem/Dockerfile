@@ -1,19 +1,20 @@
-FROM --platform=linux/amd64 ubuntu:22.04 as builder
+FROM --platform=linux/amd64 ubuntu:22.04 AS builder
 
-RUN apt-get update
-RUN DEBIAN_FRONTEND=noninteractive apt-get install -y build-essential apt-transport-https curl gnupg python3 clang
-
-RUN curl -fsSL https://bazel.build/bazel-release.pub.gpg | gpg --dearmor > bazel.gpg
-RUN mv bazel.gpg /etc/apt/trusted.gpg.d/
-RUN echo "deb [arch=amd64] https://storage.googleapis.com/bazel-apt stable jdk1.8" | tee /etc/apt/sources.list.d/bazel.list
-RUN apt update && apt install -y bazel
+RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
+    build-essential cmake ninja-build python3 clang
 
 COPY . /repo
-WORKDIR /repo
-RUN bazel build glslangValidator
-RUN bazel build glslang
-RUN clang++ /repo/mayhem/fuzz_isBuiltInSymbol.cpp -fsanitize=fuzzer,address -I /repo/glslang/MachineIndependent/ -o /fuzz -L /repo/bazel-bin/ -lglslang
+WORKDIR /repo/build
+RUN cmake .. -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++
+RUN ninja glslangValidator glslang
 
-FROM ubuntu:22.04 as package
-COPY --from=builder /repo/bazel-bin/glslangValidator /
+RUN clang++ /repo/mayhem/fuzz_isBuiltInSymbol.cpp \
+    -fsanitize=fuzzer,address \
+    -I /repo/glslang/MachineIndependent/ \
+    -o /fuzz \
+    -L /repo/build/glslang \
+    -lglslang
+
+FROM ubuntu:22.04 AS package
+COPY --from=builder /repo/build/StandAlone/glslangValidator /
 COPY --from=builder /fuzz /fuzz_isBuiltInSymbol
